@@ -87,7 +87,7 @@ Future<void> main(List<String> args) async {
         queue(details.url, path.join(output, '$prefix-front$suffix.png'));
       }
       if (art.thumbnail case final CardArtDetails details) {
-        queue(details.url, path.join(output, '$prefix-thumbn$suffix.png'));
+        queue(details.url, path.join(output, '$prefix-thumb$suffix.png'));
       }
     }
   }
@@ -104,7 +104,7 @@ Future<void> main(List<String> args) async {
     http.Response response,
   ) async {
     io.stderr.writeln(
-      'Downloading... [${downloads.length + futures.length} remaining]',
+      'Downloading... [${downloads.length} remaining]',
     );
     await Future(() {});
 
