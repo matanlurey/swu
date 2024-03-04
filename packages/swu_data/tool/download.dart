@@ -73,21 +73,40 @@ Future<void> main(List<String> args) async {
   }
 
   for (final card in cards) {
-    final prefix = '${card.set}-${card.number.toString().padLeft(3, '0')}';
+    final name = '${card.set}-${card.number.toString().padLeft(3, '0')}';
     for (final art in card.art) {
-      final suffix = switch (art.style) {
-        CardStyle.standard => '',
-        CardStyle.hyperspace => '.hyperspace',
-        CardStyle.showcase => '.showcase',
-      };
       if (art.back case final CardArtDetails details) {
-        queue(details.url, path.join(output, '$prefix-back$suffix.png'));
+        queue(
+          details.url,
+          path.join(
+            output,
+            'back',
+            art.style.name,
+            '$name.png',
+          ),
+        );
       }
       if (art.front case final CardArtDetails details) {
-        queue(details.url, path.join(output, '$prefix-front$suffix.png'));
+        queue(
+          details.url,
+          path.join(
+            output,
+            'front',
+            art.style.name,
+            '$name.png',
+          ),
+        );
       }
       if (art.thumbnail case final CardArtDetails details) {
-        queue(details.url, path.join(output, '$prefix-thumb$suffix.png'));
+        queue(
+          details.url,
+          path.join(
+            output,
+            'thumb',
+            art.style.name,
+            '$name.png',
+          ),
+        );
       }
     }
   }
@@ -109,7 +128,11 @@ Future<void> main(List<String> args) async {
     await Future(() {});
 
     // Assume it never fails.
-    io.File(filePath).writeAsBytesSync(response.bodyBytes);
+    final file = io.File(filePath);
+    if (!file.parent.existsSync()) {
+      file.parent.createSync(recursive: true);
+    }
+    file.writeAsBytesSync(response.bodyBytes);
 
     // If there are more downloads to process, process them.
     if (downloads.isNotEmpty) {
