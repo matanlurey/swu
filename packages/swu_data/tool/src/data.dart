@@ -31,13 +31,13 @@ final class Card {
       number: json['number'].number().toInt(),
       rarity: Rarity.fromName(json['rarity'].string()),
       title: json['title'].string(),
-      subTitle: json['sub_title'].string(),
+      subTitle: json['sub_title'].stringOrNull(),
       artist: json['artist'].string(),
-      cost: json['cost'].number().toInt(),
-      hp: json['hp'].number().toInt(),
-      power: json['power'].number().toInt(),
+      cost: json['cost'].numberOrNull()?.toInt(),
+      hp: json['hp'].numberOrNull()?.toInt(),
+      power: json['power'].numberOrNull()?.toInt(),
       unique: json['unique'].boolean(),
-      aspects: json['aspect']
+      aspects: json['aspects']
           .array()
           .map((json) => Aspect.fromName(json.string()))
           .toList(),
@@ -48,7 +48,8 @@ final class Card {
           .map((json) => CardArt.fromJson(json.object()))
           .toList(),
       type: CardType.fromName(json['type'].string()),
-      arena: Arena.fromName(json['arena'].string()),
+      arena:
+          json['arena'].isNull ? null : Arena.fromName(json['arena'].string()),
     );
   }
 
@@ -99,7 +100,8 @@ enum CardStyle {
 
   factory CardStyle.fromName(String name) {
     return CardStyle.values.firstWhere(
-      (style) => style.toString() == name,
+      (style) => style.name == name,
+      orElse: () => throw StateError('Unknown card style: $name'),
     );
   }
 }
@@ -116,7 +118,7 @@ final class CardArt {
   factory CardArt.fromJson(JsonObject json) {
     return CardArt(
       style: CardStyle.fromName(json['style'].string()),
-      front: CardArtDetails.fromJson(json['full'].object()),
+      front: CardArtDetails.fromJson(json['front'].object()),
       back: json['back'].isNull
           ? null
           : CardArtDetails.fromJson(json['back'].object()),
